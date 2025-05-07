@@ -6,9 +6,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
-using System.Text.Encodings.Web;
 using System.Text.Json;
-using System.Text.Unicode;
 using System.Threading.Tasks;
 using AngleSharp.Html.Parser;
 using Arkgihts_Skill_Level10_Calculator.Models;
@@ -151,7 +149,10 @@ public partial class MainWindowViewModel : ViewModelBase
                 return;
             default: return;
         }
-        var depotDic = _depot.Items.Where(m => _materialList.ContainsKey(m.Name))
+
+        var depotItems = new List<DepotItem>(_depot.Items.Length);
+        depotItems.AddRange(_depot.Items.Select(depotItem => depotItem.Copy()));
+        var depotDic = depotItems.Where(m => _materialList.ContainsKey(m.Name))
             .ToDictionary(m => m.Name);
         foreach (var item in _materialList)
         {

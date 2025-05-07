@@ -7,7 +7,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="fd6903c4-3264-4865-b441-6d0a3e4a1151" name="更改" comment="Enable AOT" />
+    <list default="true" id="fd6903c4-3264-4865-b441-6d0a3e4a1151" name="更改" comment="Remove JsonSerializerOptions">
+      <change beforePath="$PROJECT_DIR$/Arkgihts_Skill_Level10_Calculator/Models/Depot.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Arkgihts_Skill_Level10_Calculator/Models/Depot.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Arkgihts_Skill_Level10_Calculator/ViewModels/MainWindowViewModel.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Arkgihts_Skill_Level10_Calculator/ViewModels/MainWindowViewModel.cs" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -28,6 +31,10 @@
     "accountId": "422763c0-053f-4956-9187-5fe389f2a0c7"
   }
 }]]></component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="mock://D:/Files/CSharp/Arkgihts_Skill_Level10_Calculator/Arkgihts_Skill_Level10_Calculator/ViewModels/MainWindowViewModel.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock://D:/Files/CSharp/Arkgihts_Skill_Level10_Calculator/Arkgihts_Skill_Level10_Calculator/ViewModels/MainWindowViewModel.cs" root0="SKIP_HIGHLIGHTING" />
+  </component>
   <component name="MetaFilesCheckinStateConfiguration" checkMetaFiles="false" />
   <component name="ProjectColorInfo"><![CDATA[{
   "associatedIndex": 0
@@ -78,7 +85,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1746621800366</updated>
-      <workItem from="1746621802670" duration="775000" />
+      <workItem from="1746621802670" duration="1403000" />
     </task>
     <task id="LOCAL-00001" summary="Enable AOT">
       <option name="closed" value="true" />
@@ -88,7 +95,15 @@
       <option name="project" value="LOCAL" />
       <updated>1746622575844</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Remove JsonSerializerOptions">
+      <option name="closed" value="true" />
+      <created>1746622713828</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1746622713828</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -99,6 +114,7 @@
   <component name="VcsManagerConfiguration">
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
     <MESSAGE value="Enable AOT" />
-    <option name="LAST_COMMIT_MESSAGE" value="Enable AOT" />
+    <MESSAGE value="Remove JsonSerializerOptions" />
+    <option name="LAST_COMMIT_MESSAGE" value="Remove JsonSerializerOptions" />
   </component>
 </project>

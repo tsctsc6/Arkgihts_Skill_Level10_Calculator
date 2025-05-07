@@ -7,6 +7,16 @@ public class DepotItem
     public int Have { get; set; } = 0;
     public string Id { get; set; } = string.Empty;
     public string Name { get; set; } = string.Empty;
+
+    public DepotItem Copy()
+    {
+        return new()
+        {
+            Have = Have,
+            Id = Id,
+            Name = Name,
+        };
+    }
 }
 
 public class Depot
