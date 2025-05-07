@@ -37,7 +37,7 @@ public partial class MainWindowViewModel : ViewModelBase
     
     public ObservableCollection<KeyValuePair<string, int>> LackRarity2 { get; }= [];
 
-    private Depot? _depot = null;
+    private Depot? _depot;
     
     public JsonSerializerOptions JsonSerializerOptions { get; } = new()
     {
@@ -62,7 +62,7 @@ public partial class MainWindowViewModel : ViewModelBase
         
         if (!File.Exists(App.ResourceInfoPath)) return;
         var resourceInfo = JsonSerializer.Deserialize<ResourceInfo>(File.ReadAllText(App.ResourceInfoPath),
-            JsonSerializerOptions);
+            MyJsonSerializerContext.Default.ResourceInfo);
         if (resourceInfo == null) return;
 
         Array.ForEach(resourceInfo.OperatorList, s => OperatorList.Add(s));
@@ -78,7 +78,7 @@ public partial class MainWindowViewModel : ViewModelBase
         if (string.IsNullOrEmpty(content)) return;
         try
         {
-            _depot = JsonSerializer.Deserialize<Depot>(content, JsonSerializerOptions);
+            _depot = JsonSerializer.Deserialize<Depot>(content, MyJsonSerializerContext.Default.Depot);
         }
         catch (Exception)
         {
@@ -130,11 +130,11 @@ public partial class MainWindowViewModel : ViewModelBase
         
         if (getOperatorListTaskResult.IsErr || getMaterialListTaskResult.IsErr) return;
         
-        await File.WriteAllTextAsync(App.ResourceInfoPath, JsonSerializer.Serialize(new ResourceInfo()
+        await File.WriteAllTextAsync(App.ResourceInfoPath, JsonSerializer.Serialize(new ResourceInfo
         {
             OperatorList = OperatorList.ToArray(),
             MaterialList = _materialList.Select(kv => kv.Value).ToArray(),
-        }, JsonSerializerOptions));
+        }, MyJsonSerializerContext.Default.ResourceInfo));
     }
     
     [RelayCommand]
