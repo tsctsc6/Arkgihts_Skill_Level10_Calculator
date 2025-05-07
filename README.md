@@ -6,7 +6,7 @@
 * 游戏出现新材料时，一键更新材料信息
 
 ## 使用
-* 仓库材料库存的文件，指定为"./depot.json"，可以通过 [MAA](https://github.com/MaaAssistantArknights/MaaAssistantArknights) 的"小工具"->"仓库识别"，"导出至企鹅物流刷图规划"，复制结果到剪贴板。然后点击"把剪贴板的内容粘贴到仓库文件中"按钮粘贴。
+* 获取仓库材料库存：通过 [MAA](https://github.com/MaaAssistantArknights/MaaAssistantArknights) 的"小工具"->"仓库识别"，"导出至企鹅物流刷图规划"，复制结果到剪贴板。然后点击"把剪贴板的内容粘贴到仓库文件中"按钮粘贴。
 * 左边的表格，为需要合成的材料，按稀有度升序排列；其中的材料数量包括了后面更高级材料的合成所需材料数。
 * 右边的表格，为欠缺的蓝材料 (2级材料) 数。
 
