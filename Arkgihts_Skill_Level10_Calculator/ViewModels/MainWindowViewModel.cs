@@ -6,7 +6,9 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Text.Encodings.Web;
 using System.Text.Json;
+using System.Text.Unicode;
 using System.Threading.Tasks;
 using AngleSharp.Html.Parser;
 using Arkgihts_Skill_Level10_Calculator.Models;
@@ -34,6 +36,16 @@ public partial class MainWindowViewModel : ViewModelBase
     public ObservableCollection<KeyValuePair<string, int>> NeedComposition { get; } = [];
     
     public ObservableCollection<KeyValuePair<string, int>> LackRarity2 { get; }= [];
+
+    private Depot? _depot = null;
+    
+    public JsonSerializerOptions JsonSerializerOptions { get; } = new()
+    {
+        PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower,
+        WriteIndented = true,
+        IndentSize = 4,
+        Encoder = JavaScriptEncoder.Create(UnicodeRanges.All)
+    };
     
     public MainWindowViewModel(HttpClient httpClient, HtmlParser htmlParser)
     {
@@ -50,7 +62,7 @@ public partial class MainWindowViewModel : ViewModelBase
         
         if (!File.Exists(App.ResourceInfoPath)) return;
         var resourceInfo = JsonSerializer.Deserialize<ResourceInfo>(File.ReadAllText(App.ResourceInfoPath),
-            App.Current.JsonSerializerOptions);
+            JsonSerializerOptions);
         if (resourceInfo == null) return;
 
         Array.ForEach(resourceInfo.OperatorList, s => OperatorList.Add(s));
@@ -64,10 +76,9 @@ public partial class MainWindowViewModel : ViewModelBase
         if (clipboard == null) return;
         var content = await clipboard.GetTextAsync();
         if (string.IsNullOrEmpty(content)) return;
-        Depot? depot;
         try
         {
-            depot = JsonSerializer.Deserialize<Depot>(content, App.Current.JsonSerializerOptions);
+            _depot = JsonSerializer.Deserialize<Depot>(content, JsonSerializerOptions);
         }
         catch (Exception)
         {
@@ -75,7 +86,7 @@ public partial class MainWindowViewModel : ViewModelBase
                 .ShowWindowDialogAsync(App.Current.MainWindow);
             return;
         }
-        if (depot == null) return;
+        if (_depot == null) return;
         await MessageBoxManager.GetMessageBoxStandard("Info", "Success")
             .ShowWindowDialogAsync(App.Current.MainWindow);
     }
@@ -123,13 +134,78 @@ public partial class MainWindowViewModel : ViewModelBase
         {
             OperatorList = OperatorList.ToArray(),
             MaterialList = _materialList.Select(kv => kv.Value).ToArray(),
-        }, App.Current.JsonSerializerOptions));
+        }, JsonSerializerOptions));
     }
     
     [RelayCommand]
     private async Task CalculateSkillMaterialAsync()
     {
-        await Task.Delay(1000);
+        if (_depot == null)
+        {
+            await MessageBoxManager.GetMessageBoxStandard("Error", "请粘贴仓库信息")
+                .ShowWindowDialogAsync(App.Current.MainWindow);
+            return;
+        }
+        var skillInfoResult = await GetOperatorSkillInfoAsync();
+        KeyValuePair<string, int>[,,] skillInfo;
+        switch (skillInfoResult)
+        {
+            case OkResult<KeyValuePair<string, int>[,,], string> okResult:
+                skillInfo = okResult.Value;
+                break;
+            case ErrResult<KeyValuePair<string, int>[,,], string> errResult:
+                await MessageBoxManager.GetMessageBoxStandard("Error", errResult.Value)
+                    .ShowWindowDialogAsync(App.Current.MainWindow);
+                return;
+            default: return;
+        }
+        var depotDic = _depot.Items.Where(m => _materialList.ContainsKey(m.Name))
+            .ToDictionary(m => m.Name);
+        foreach (var item in _materialList)
+        {
+            depotDic.TryAdd(item.Key, new()
+            {
+                Name = item.Key,
+                Have = 0
+            });
+        }
+        for (var i = 0; i < 3; i++)
+        {
+            for (var j = 0; j < 2; j++)
+            {
+                depotDic[skillInfo[SelectedSkillIndex, i, j].Key].Have -= skillInfo[SelectedSkillIndex, i, j].Value;
+            }
+        }
+
+        var lackDirectly = depotDic.Where(d => d.Value.Have < 0)
+            .OrderByDescending(d => _materialList[d.Key].Rarity);
+        foreach (var item in lackDirectly)
+        {
+            foreach (var item2 in _materialList[item.Key].Composition)
+            {
+                // 已知 item.Value.Have < 0
+                depotDic[item2.Key].Have += item2.Value * item.Value.Have;
+            }
+        }
+        
+        var needComposition = depotDic
+            .Where(d => _materialList[d.Key].Rarity > 2 && d.Value.Have < 0)
+            .Select(d => new KeyValuePair<string, int>(d.Key, -d.Value.Have))
+            .OrderBy(d => _materialList[d.Key].Rarity);
+        NeedComposition.Clear();
+        foreach (var item in needComposition)
+        {
+            NeedComposition.Add(item);
+        }
+
+        var lackRarity2 = depotDic
+            .Where(d => _materialList[d.Key].Rarity == 2 && d.Value.Have < 0)
+            .Select(d => new KeyValuePair<string, int>(d.Key, -d.Value.Have));
+        LackRarity2.Clear();
+        foreach (var item in lackRarity2)
+        {
+            LackRarity2.Add(item);
+        }
     }
     
     private async Task<Result<KeyValuePair<string, int>[,,], string>> GetOperatorSkillInfoAsync()

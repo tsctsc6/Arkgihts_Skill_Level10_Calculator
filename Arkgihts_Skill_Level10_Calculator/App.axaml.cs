@@ -3,9 +3,6 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data.Core.Plugins;
 using System.Linq;
 using System.Net.Http;
-using System.Text.Encodings.Web;
-using System.Text.Json;
-using System.Text.Unicode;
 using AngleSharp.Html.Parser;
 using Avalonia.Markup.Xaml;
 using Arkgihts_Skill_Level10_Calculator.ViewModels;
@@ -20,7 +17,6 @@ public partial class App : Application
     
     private readonly HttpClient _httpClient;
     private readonly HtmlParser _htmlParser;
-    public JsonSerializerOptions JsonSerializerOptions { get; }
     public const string ResourceInfoPath = "resource_info.json";
     
     public MainWindowViewModel MainWindowViewModel { get; }
@@ -30,13 +26,6 @@ public partial class App : Application
     {
         _httpClient = new();
         _htmlParser = new();
-        JsonSerializerOptions = new()
-        {
-            PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower,
-            WriteIndented = true,
-            IndentSize = 4,
-            Encoder = JavaScriptEncoder.Create(UnicodeRanges.All)
-        };
         MainWindowViewModel = new(_httpClient, _htmlParser);
     }
     
