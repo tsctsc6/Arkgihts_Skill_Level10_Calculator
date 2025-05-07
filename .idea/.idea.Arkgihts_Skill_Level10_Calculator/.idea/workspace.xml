@@ -7,12 +7,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="fd6903c4-3264-4865-b441-6d0a3e4a1151" name="更改" comment="">
-      <change afterPath="$PROJECT_DIR$/Arkgihts_Skill_Level10_Calculator/Models/MyJsonSerializerContext.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.Arkgihts_Skill_Level10_Calculator/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Arkgihts_Skill_Level10_Calculator/.idea/vcs.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.Arkgihts_Skill_Level10_Calculator/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Arkgihts_Skill_Level10_Calculator/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Arkgihts_Skill_Level10_Calculator/Arkgihts_Skill_Level10_Calculator.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/Arkgihts_Skill_Level10_Calculator/Arkgihts_Skill_Level10_Calculator.csproj" afterDir="false" />
-    </list>
+    <list default="true" id="fd6903c4-3264-4865-b441-6d0a3e4a1151" name="更改" comment="Enable AOT" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -83,8 +78,17 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1746621800366</updated>
-      <workItem from="1746621802670" duration="474000" />
+      <workItem from="1746621802670" duration="775000" />
     </task>
+    <task id="LOCAL-00001" summary="Enable AOT">
+      <option name="closed" value="true" />
+      <created>1746622575844</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1746622575844</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -94,5 +98,7 @@
   <component name="UnityProjectConfiguration" hasMinimizedUI="false" />
   <component name="VcsManagerConfiguration">
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
+    <MESSAGE value="Enable AOT" />
+    <option name="LAST_COMMIT_MESSAGE" value="Enable AOT" />
   </component>
 </project>

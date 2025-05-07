@@ -39,14 +39,6 @@ public partial class MainWindowViewModel : ViewModelBase
 
     private Depot? _depot;
     
-    public JsonSerializerOptions JsonSerializerOptions { get; } = new()
-    {
-        PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower,
-        WriteIndented = true,
-        IndentSize = 4,
-        Encoder = JavaScriptEncoder.Create(UnicodeRanges.All)
-    };
-    
     public MainWindowViewModel(HttpClient httpClient, HtmlParser htmlParser)
     {
         _httpClient = httpClient;
