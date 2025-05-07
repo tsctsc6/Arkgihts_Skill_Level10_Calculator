@@ -7,11 +7,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="131c0442-dd7d-4146-8474-1ba9c386532f" name="更改" comment="Update README and LICENSE">
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.Arkgihts_Skill_Level10_Calculator/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Arkgihts_Skill_Level10_Calculator/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Arkgihts_Skill_Level10_Calculator/App.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Arkgihts_Skill_Level10_Calculator/App.axaml.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Arkgihts_Skill_Level10_Calculator/ViewModels/MainWindowViewModel.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Arkgihts_Skill_Level10_Calculator/ViewModels/MainWindowViewModel.cs" afterDir="false" />
-    </list>
+    <list default="true" id="131c0442-dd7d-4146-8474-1ba9c386532f" name="更改" comment="Update" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -48,7 +44,7 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
-    ".NET 项目.Arkgihts_Skill_Level10_Calculator.executor": "Debug",
+    ".NET 项目.Arkgihts_Skill_Level10_Calculator.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "git-widget-placeholder": "main",
     "node.js.detected.package.eslint": "true",
@@ -88,7 +84,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1746620031123</updated>
-      <workItem from="1746620033278" duration="1132000" />
+      <workItem from="1746620033278" duration="1435000" />
     </task>
     <task id="LOCAL-00001" summary="Update README and LICENSE">
       <option name="closed" value="true" />
@@ -98,7 +94,15 @@
       <option name="project" value="LOCAL" />
       <updated>1746620258309</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Update">
+      <option name="closed" value="true" />
+      <created>1746621423167</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1746621423167</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -109,25 +113,7 @@
   <component name="VcsManagerConfiguration">
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
     <MESSAGE value="Update README and LICENSE" />
-    <option name="LAST_COMMIT_MESSAGE" value="Update README and LICENSE" />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="DotNet Breakpoints">
-          <url>file://$PROJECT_DIR$/Arkgihts_Skill_Level10_Calculator/ViewModels/MainWindowViewModel.cs</url>
-          <line>164</line>
-          <properties documentPath="D:\Files\CSharp\Arkgihts_Skill_Level10_Calculator\Arkgihts_Skill_Level10_Calculator\ViewModels\MainWindowViewModel.cs" containingFunctionPresentation="方法 'CalculateSkillMaterialAsync'">
-            <startOffsets>
-              <option value="6010" />
-            </startOffsets>
-            <endOffsets>
-              <option value="6011" />
-            </endOffsets>
-          </properties>
-          <option name="timeStamp" value="1" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
+    <MESSAGE value="Update" />
+    <option name="LAST_COMMIT_MESSAGE" value="Update" />
   </component>
 </project>
