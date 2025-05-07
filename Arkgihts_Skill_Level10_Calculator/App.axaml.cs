@@ -1,0 +1,77 @@
+using Avalonia;
+using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Data.Core.Plugins;
+using System.Linq;
+using System.Net.Http;
+using System.Text.Encodings.Web;
+using System.Text.Json;
+using System.Text.Unicode;
+using AngleSharp.Html.Parser;
+using Avalonia.Markup.Xaml;
+using Arkgihts_Skill_Level10_Calculator.ViewModels;
+using Arkgihts_Skill_Level10_Calculator.Views;
+using Avalonia.Controls;
+
+namespace Arkgihts_Skill_Level10_Calculator;
+
+public partial class App : Application
+{
+    public new static App Current => (Application.Current as App)!;
+    
+    private readonly HttpClient _httpClient;
+    private readonly HtmlParser _htmlParser;
+    public JsonSerializerOptions JsonSerializerOptions { get; }
+    public const string ResourceInfoPath = "resource_info.json";
+    
+    public MainWindowViewModel MainWindowViewModel { get; }
+    public Window MainWindow { get; private set; }
+    
+    public App()
+    {
+        _httpClient = new();
+        _htmlParser = new();
+        JsonSerializerOptions = new()
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower,
+            WriteIndented = true,
+            IndentSize = 4,
+            Encoder = JavaScriptEncoder.Create(UnicodeRanges.All)
+        };
+        MainWindowViewModel = new(_httpClient, _htmlParser);
+    }
+    
+    public override void Initialize()
+    {
+        AvaloniaXamlLoader.Load(this);
+    }
+
+    public override void OnFrameworkInitializationCompleted()
+    {
+        if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+        {
+            // Avoid duplicate validations from both Avalonia and the CommunityToolkit. 
+            // More info: https://docs.avaloniaui.net/docs/guides/development-guides/data-validation#manage-validationplugins
+            DisableAvaloniaDataAnnotationValidation();
+            desktop.MainWindow = new MainWindow
+            {
+                DataContext = MainWindowViewModel,
+            };
+            MainWindow = desktop.MainWindow;
+        }
+
+        base.OnFrameworkInitializationCompleted();
+    }
+
+    private void DisableAvaloniaDataAnnotationValidation()
+    {
+        // Get an array of plugins to remove
+        var dataValidationPluginsToRemove =
+            BindingPlugins.DataValidators.OfType<DataAnnotationsValidationPlugin>().ToArray();
+
+        // remove each entry found
+        foreach (var plugin in dataValidationPluginsToRemove)
+        {
+            BindingPlugins.DataValidators.Remove(plugin);
+        }
+    }
+}
