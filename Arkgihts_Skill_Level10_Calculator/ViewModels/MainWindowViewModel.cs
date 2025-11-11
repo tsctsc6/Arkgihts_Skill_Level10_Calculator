@@ -10,6 +10,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using AngleSharp.Html.Parser;
 using Arkgihts_Skill_Level10_Calculator.Models;
+using Avalonia.Input.Platform;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MsBox.Avalonia;
@@ -69,7 +70,7 @@ public partial class MainWindowViewModel : ViewModelBase
         var clipboard = App.Current.MainWindow.Clipboard;
         if (clipboard == null)
             return;
-        var content = await clipboard.GetTextAsync();
+        var content = await clipboard.TryGetTextAsync();
         if (string.IsNullOrEmpty(content))
             return;
         try
