@@ -24,19 +24,19 @@ public partial class MainWindowViewModel : ViewModelBase
     private readonly HtmlParser _htmlParser;
 
     public ObservableCollection<string> OperatorList { get; } = [];
-    
+
     [ObservableProperty]
     private string _selectedOperator = string.Empty;
-    
+
     [ObservableProperty]
     private int _selectedSkillIndex;
-    
+
     public ObservableCollection<KeyValuePair<string, int>> NeedComposition { get; } = [];
-    
-    public ObservableCollection<KeyValuePair<string, int>> LackRarity2 { get; }= [];
+
+    public ObservableCollection<KeyValuePair<string, int>> LackRarity2 { get; } = [];
 
     private Depot? _depot;
-    
+
     public MainWindowViewModel(HttpClient httpClient, HtmlParser htmlParser)
     {
         _httpClient = httpClient;
@@ -49,35 +49,47 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         OperatorList.Clear();
         _materialList = Array.Empty<Material>().ToFrozenDictionary(m => m.Name);
-        
-        if (!File.Exists(App.ResourceInfoPath)) return;
-        var resourceInfo = JsonSerializer.Deserialize<ResourceInfo>(File.ReadAllText(App.ResourceInfoPath),
-            MyJsonSerializerContext.Default.ResourceInfo);
-        if (resourceInfo == null) return;
+
+        if (!File.Exists(App.ResourceInfoPath))
+            return;
+        var resourceInfo = JsonSerializer.Deserialize<ResourceInfo>(
+            File.ReadAllText(App.ResourceInfoPath),
+            MyJsonSerializerContext.Default.ResourceInfo
+        );
+        if (resourceInfo == null)
+            return;
 
         Array.ForEach(resourceInfo.OperatorList, s => OperatorList.Add(s));
         _materialList = resourceInfo.MaterialList.ToFrozenDictionary(m => m.Name);
     }
-    
+
     [RelayCommand]
     private async Task LoadDepotFromClipboardAsync()
     {
         var clipboard = App.Current.MainWindow.Clipboard;
-        if (clipboard == null) return;
+        if (clipboard == null)
+            return;
         var content = await clipboard.GetTextAsync();
-        if (string.IsNullOrEmpty(content)) return;
+        if (string.IsNullOrEmpty(content))
+            return;
         try
         {
-            _depot = JsonSerializer.Deserialize<Depot>(content, MyJsonSerializerContext.Default.Depot);
+            _depot = JsonSerializer.Deserialize<Depot>(
+                content,
+                MyJsonSerializerContext.Default.Depot
+            );
         }
         catch (Exception)
         {
-            await MessageBoxManager.GetMessageBoxStandard("Info", "Failed")
+            await MessageBoxManager
+                .GetMessageBoxStandard("Info", "Failed")
                 .ShowWindowDialogAsync(App.Current.MainWindow);
             return;
         }
-        if (_depot == null) return;
-        await MessageBoxManager.GetMessageBoxStandard("Info", "Success")
+        if (_depot == null)
+            return;
+        await MessageBoxManager
+            .GetMessageBoxStandard("Info", "Success")
             .ShowWindowDialogAsync(App.Current.MainWindow);
     }
 
@@ -87,7 +99,7 @@ public partial class MainWindowViewModel : ViewModelBase
         var getOperatorListTask = GetOperatorListAsync();
         var getMaterialListTask = GetMaterialListAsync();
         await Task.WhenAll(getOperatorListTask, getMaterialListTask);
-        
+
         var getOperatorListTaskResult = await getOperatorListTask;
         switch (getOperatorListTaskResult)
         {
@@ -99,12 +111,14 @@ public partial class MainWindowViewModel : ViewModelBase
                 }
                 break;
             case ErrResult<IEnumerable<string>, string> errResult:
-                await MessageBoxManager.GetMessageBoxStandard("Error", errResult.Value)
+                await MessageBoxManager
+                    .GetMessageBoxStandard("Error", errResult.Value)
                     .ShowWindowDialogAsync(App.Current.MainWindow);
                 break;
-            default: return;
+            default:
+                return;
         }
-        
+
         var getMaterialListTaskResult = await getMaterialListTask;
         switch (getMaterialListTaskResult)
         {
@@ -112,27 +126,37 @@ public partial class MainWindowViewModel : ViewModelBase
                 _materialList = okResult.Value;
                 break;
             case ErrResult<FrozenDictionary<string, Material>, string> errResult:
-                await MessageBoxManager.GetMessageBoxStandard("Error", errResult.Value)
+                await MessageBoxManager
+                    .GetMessageBoxStandard("Error", errResult.Value)
                     .ShowWindowDialogAsync(App.Current.MainWindow);
                 break;
-            default: return;
+            default:
+                return;
         }
-        
-        if (getOperatorListTaskResult.IsErr || getMaterialListTaskResult.IsErr) return;
-        
-        await File.WriteAllTextAsync(App.ResourceInfoPath, JsonSerializer.Serialize(new ResourceInfo
-        {
-            OperatorList = OperatorList.ToArray(),
-            MaterialList = _materialList.Select(kv => kv.Value).ToArray(),
-        }, MyJsonSerializerContext.Default.ResourceInfo));
+
+        if (getOperatorListTaskResult.IsErr || getMaterialListTaskResult.IsErr)
+            return;
+
+        await File.WriteAllTextAsync(
+            App.ResourceInfoPath,
+            JsonSerializer.Serialize(
+                new ResourceInfo
+                {
+                    OperatorList = OperatorList.ToArray(),
+                    MaterialList = _materialList.Select(kv => kv.Value).ToArray(),
+                },
+                MyJsonSerializerContext.Default.ResourceInfo
+            )
+        );
     }
-    
+
     [RelayCommand]
     private async Task CalculateSkillMaterialAsync()
     {
         if (_depot == null)
         {
-            await MessageBoxManager.GetMessageBoxStandard("Error", "请粘贴仓库信息")
+            await MessageBoxManager
+                .GetMessageBoxStandard("Error", "请粘贴仓库信息")
                 .ShowWindowDialogAsync(App.Current.MainWindow);
             return;
         }
@@ -144,33 +168,37 @@ public partial class MainWindowViewModel : ViewModelBase
                 skillInfo = okResult.Value;
                 break;
             case ErrResult<KeyValuePair<string, int>[,,], string> errResult:
-                await MessageBoxManager.GetMessageBoxStandard("Error", errResult.Value)
+                await MessageBoxManager
+                    .GetMessageBoxStandard("Error", errResult.Value)
                     .ShowWindowDialogAsync(App.Current.MainWindow);
                 return;
-            default: return;
+            default:
+                return;
         }
 
         var depotItems = new List<DepotItem>(_depot.Items.Length);
         depotItems.AddRange(_depot.Items.Select(depotItem => depotItem.Copy()));
-        var depotDic = depotItems.Where(m => _materialList.ContainsKey(m.Name))
+        var depotDic = depotItems
+            .Where(m => _materialList.ContainsKey(m.Name))
             .ToDictionary(m => m.Name);
         foreach (var item in _materialList)
         {
-            depotDic.TryAdd(item.Key, new()
-            {
-                Name = item.Key,
-                Have = 0
-            });
+            depotDic.TryAdd(item.Key, new() { Name = item.Key, Have = 0 });
         }
         for (var i = 0; i < 3; i++)
         {
             for (var j = 0; j < 2; j++)
             {
-                depotDic[skillInfo[SelectedSkillIndex, i, j].Key].Have -= skillInfo[SelectedSkillIndex, i, j].Value;
+                depotDic[skillInfo[SelectedSkillIndex, i, j].Key].Have -= skillInfo[
+                    SelectedSkillIndex,
+                    i,
+                    j
+                ].Value;
             }
         }
 
-        var lackDirectly = depotDic.Where(d => d.Value.Have < 0)
+        var lackDirectly = depotDic
+            .Where(d => d.Value.Have < 0)
             .OrderByDescending(d => _materialList[d.Key].Rarity);
         foreach (var item in lackDirectly)
         {
@@ -180,7 +208,7 @@ public partial class MainWindowViewModel : ViewModelBase
                 depotDic[item2.Key].Have += item2.Value * item.Value.Have;
             }
         }
-        
+
         var needComposition = depotDic
             .Where(d => _materialList[d.Key].Rarity > 2 && d.Value.Have < 0)
             .Select(d => new KeyValuePair<string, int>(d.Key, -d.Value.Have))
@@ -200,75 +228,100 @@ public partial class MainWindowViewModel : ViewModelBase
             LackRarity2.Add(item);
         }
     }
-    
+
     private async Task<Result<KeyValuePair<string, int>[,,], string>> GetOperatorSkillInfoAsync()
     {
         var uri = $"https://prts.wiki/w/{SelectedOperator}";
         var resp = await _httpClient.GetAsync(uri);
-        if (!resp.IsSuccessStatusCode) return Result.Err($"{uri}, StatusCode: {resp.StatusCode.ToString()}");
+        if (!resp.IsSuccessStatusCode)
+            return Result.Err($"{uri}, StatusCode: {resp.StatusCode.ToString()}");
         using var document = _htmlParser.ParseDocument(await resp.Content.ReadAsStringAsync());
-        var table = document.QuerySelector("span#技能升级材料")?.ParentElement?
-            .NextElementSibling?.NextElementSibling?
-            .QuerySelector("tbody")?.Children.Skip(9);
-        if (table == null) return Result.Err("无法定位技能升级材料");
+        var table = document
+            .QuerySelector("span#技能升级材料")
+            ?.ParentElement?.NextElementSibling?.NextElementSibling?.QuerySelector("tbody")
+            ?.Children.Skip(9);
+        if (table == null)
+            return Result.Err("无法定位技能升级材料");
         var skillInfo = new KeyValuePair<string, int>[3, 3, 2];
         foreach (var (i, tr) in table.Index())
         {
             var d = Math.DivRem(i, 4, out var r);
-            if (r == 0) continue;
+            if (r == 0)
+                continue;
             var td = tr.QuerySelector("td");
-            if (td == null) continue;
+            if (td == null)
+                continue;
             foreach (var (j, div) in td.Children.Index())
             {
-                if (j == 0) continue;
+                if (j == 0)
+                    continue;
                 var name = div.QuerySelector("a")?.Attributes["title"]?.Value;
-                if (string.IsNullOrEmpty(name)) continue;
-                if (!int.TryParse(div.QuerySelector("span")?.TextContent, out var count)) continue;
+                if (string.IsNullOrEmpty(name))
+                    continue;
+                if (!int.TryParse(div.QuerySelectorAll("span")[1].TextContent, out var count))
+                    continue;
                 skillInfo[d, r - 1, j - 1] = new KeyValuePair<string, int>(name, count);
             }
         }
         return Result.Ok(skillInfo);
     }
-    
+
     private async Task<Result<IEnumerable<string>, string>> GetOperatorListAsync()
     {
         const string uri = "https://prts.wiki/w/干员一览";
         var resp = await _httpClient.GetAsync(uri);
-        if (!resp.IsSuccessStatusCode) return Result.Err($"{uri}, StatusCode: {resp.StatusCode.ToString()}");
+        if (!resp.IsSuccessStatusCode)
+            return Result.Err($"{uri}, StatusCode: {resp.StatusCode.ToString()}");
         using var document = _htmlParser.ParseDocument(await resp.Content.ReadAsStringAsync());
         var operatorData = document.QuerySelector("div#filter-data")?.Children;
-        var operatorList = operatorData?.Select(e => e.Attributes["data-zh"]?.Value).Where(n => n is not null)
-                   .Select(n => n!) ?? [];
+        var operatorList =
+            operatorData
+                ?.Select(e => e.Attributes["data-zh"]?.Value)
+                .Where(n => n is not null)
+                .Select(n => n!) ?? [];
         return Result.Ok(operatorList);
     }
-    
+
     private async Task<Result<FrozenDictionary<string, Material>, string>> GetMaterialListAsync()
     {
         const string uri = "https://prts.wiki/w/道具一览";
         var resp = await _httpClient.GetAsync(uri);
-        if (!resp.IsSuccessStatusCode) return Result.Err($"{uri}, StatusCode: {resp.StatusCode.ToString()}");
+        if (!resp.IsSuccessStatusCode)
+            return Result.Err($"{uri}, StatusCode: {resp.StatusCode.ToString()}");
         using var document = _htmlParser.ParseDocument(await resp.Content.ReadAsStringAsync());
-        var materialData = document.QuerySelector("div.mw-parser-output")?.Children
-            .Where(e =>
+        var materialData = document
+            .QuerySelector("div.mw-parser-output")
+            ?.Children.Where(e =>
             {
-                if (!int.TryParse(e.Attributes["data-rarity"]?.Value, out var rarity)) return false;
-                if (rarity < 2) return false;
-                if (!(e.Attributes["data-category"]?.Value.Contains("分类:材料") ?? false)) return false;
-                return (e.Attributes["data-category"]?.Value.Contains("分类:加工站产物") ?? false) ||
-                       e.Attributes["data-obtain_approach"]?.Value == "常规关卡掉落";
+                if (!int.TryParse(e.Attributes["data-rarity"]?.Value, out var rarity))
+                    return false;
+                if (rarity < 2)
+                    return false;
+                if (!(e.Attributes["data-category"]?.Value.Contains("分类:材料") ?? false))
+                    return false;
+                return (e.Attributes["data-category"]?.Value.Contains("分类:加工站产物") ?? false)
+                    || e.Attributes["data-obtain_approach"]?.Value == "常规关卡掉落";
             })
             .Select(e => new Material
             {
                 Name = e.Attributes["data-name"]?.Value ?? string.Empty,
                 Rarity = int.Parse(e.Attributes["data-rarity"]?.Value ?? string.Empty),
-            }).ToArray();
-        if (materialData is null) return Result.Err("无法定位道具信息");
-        var compositionResults = await Task.WhenAll(materialData.Where(m => m.Rarity > 2).Select(GetCompositionAsync));
+            })
+            .ToArray();
+        if (materialData is null)
+            return Result.Err("无法定位道具信息");
+        var compositionResults = await Task.WhenAll(
+            materialData.Where(m => m.Rarity > 2).Select(GetCompositionAsync)
+        );
         if (compositionResults.Any(c => c.IsErr))
         {
-            var errorMessages = compositionResults.Where(c => c.IsErr)
-                .Select(c => (c as ErrResult<string, string>)!.Value).ToArray();
-            return Result.Err($"获取材料合成表时发生问题:{Environment.NewLine}{string.Join(Environment.NewLine, errorMessages)}");
+            var errorMessages = compositionResults
+                .Where(c => c.IsErr)
+                .Select(c => (c as ErrResult<string, string>)!.Value)
+                .ToArray();
+            return Result.Err(
+                $"获取材料合成表时发生问题:{Environment.NewLine}{string.Join(Environment.NewLine, errorMessages)}"
+            );
         }
         return Result.Ok(materialData.ToFrozenDictionary(m => m.Name));
     }
@@ -277,19 +330,27 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         var uri = $"https://prts.wiki/w/{material.Name}";
         var resp = await _httpClient.GetAsync(uri);
-        if (!resp.IsSuccessStatusCode) return Result.Err($"{uri}, StatusCode: {resp.StatusCode.ToString()}");
+        if (!resp.IsSuccessStatusCode)
+            return Result.Err($"{uri}, StatusCode: {resp.StatusCode.ToString()}");
         using var document = _htmlParser.ParseDocument(await resp.Content.ReadAsStringAsync());
-        var composition = document.QuerySelector("span#加工站")?.ParentElement?.NextElementSibling?
-            .QuerySelector("tbody > tr:nth-child(2) > td > div")?.Children;
-        if (composition is null) return Result.Err($"{uri}, 无法定位道具合成信息");
+        var composition = document
+            .QuerySelector("span#加工站")
+            ?.ParentElement?.NextElementSibling?.QuerySelector("tbody > tr:nth-child(2) > td > div")
+            ?.Children;
+        if (composition is null)
+            return Result.Err($"{uri}, 无法定位道具合成信息");
         material.Composition = [];
         var pairs = new List<KeyValuePair<string, int>>(3);
         foreach (var compositionItem in composition)
         {
-            if (!int.TryParse(compositionItem.QuerySelector("span")?.InnerHtml, out var count)) continue;
-            pairs.Add(new(
-                compositionItem.QuerySelector("a")?.Attributes["title"]?.Value ?? string.Empty, count
-            ));
+            if (!int.TryParse(compositionItem.QuerySelector("span")?.InnerHtml, out var count))
+                continue;
+            pairs.Add(
+                new(
+                    compositionItem.QuerySelector("a")?.Attributes["title"]?.Value ?? string.Empty,
+                    count
+                )
+            );
         }
         material.Composition = pairs.ToArray();
         return Result.Ok(material.Name);
